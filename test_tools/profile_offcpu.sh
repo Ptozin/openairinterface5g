@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONFIG_FILE="./profile_config.sh"
+CONFIG_FILE="./config.sh"
 if [ -f "$CONFIG_FILE" ]; then
     source "$CONFIG_FILE"
 else

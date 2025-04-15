@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONFIG_FILE="./profile_config.sh"
+CONFIG_FILE="./config.sh"
 if [ -f "$CONFIG_FILE" ]; then
     source "$CONFIG_FILE"
 else
@@ -12,11 +12,11 @@ OUTPUT_FILE="${OUTPUT_DIR}/perf.data.cpu"
 
 echo "Starting CPU profiling for ${DURATION} seconds..."
 echo "Executable: ${NRUE_EXEC}"
-echo "Arguments: ${NRUE_ARGS}"
+echo "Arguments: ${NRUE_ARGS[@]}"
 echo "Output file: ${OUTPUT_FILE}"
 
 sudo perf record -g -o "${OUTPUT_FILE}" -- \
-    timeout "${DURATION}" "${NRUE_EXEC}" ${NRUE_ARGS}
+    timeout "${DURATION}" "${NRUE_EXEC}" ${NRUE_ARGS[@]}
 
 # Check if perf record was successful (timeout returns 124 if command times out)
 status=$?

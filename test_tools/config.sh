@@ -2,12 +2,8 @@
 
 # --- Shared Configuration for OAI nrUE Profiling ---
 
-# Resolve the home directory path of the user running sudo
-# This ensures '~' or $HOME expands correctly even with sudo
-USER_HOME=$(eval echo ~${SUDO_USER:-$USER})
-
 # Path to the nr-uesoftmodem executable
-NRUE_EXEC="${USER_HOME}/openairinterface5g/cmake_targets/ran_build/build/nr-uesoftmodem"
+NRUE_EXEC="../cmake_targets/ran_build/build/nr-uesoftmodem"
 
 # Arguments for nr-uesoftmodem (defined as an array for robustness)
 NRUE_ARGS=(
@@ -33,7 +29,7 @@ NRUE_ARGS=(
 DURATION=30
 
 # Directory to store the output perf.data files
-OUTPUT_DIR="perf_results"
+OUTPUT_DIR="$(pwd)/perf_results"
 
 # --- End Shared Configuration ---
 

@@ -9,27 +9,30 @@ else
 fi
 
 # --- Script-Specific Configuration ---
-OUTPUT_FILE="${OUTPUT_DIR}/perf.data.branch"
-PERF_EVENT="branch-misses"
+GPROF_OUT="${OUTPUT_DIR}/gmon.out"
+GPROF_REPORT="${OUTPUT_DIR}/gprof_report.txt"
 # --- End Script-Specific Configuration ---
 
-echo "Starting branch miss profiling (${PERF_EVENT}) for ${DURATION} seconds..."
+echo "NOTE: Ensure your binary is compiled with -pg for gprof support."
+echo "Starting profiling with gprof..."
 echo "Executable: ${NRUE_EXEC}"
 echo "Arguments: ${NRUE_ARGS[@]}"
-echo "Output file: ${OUTPUT_FILE}"
+echo "Output file: ${GPROF_OUT}"
 
-sudo perf record -e "${PERF_EVENT}" -g -o "${OUTPUT_FILE}" -- \
-    timeout "${DURATION}" "${NRUE_EXEC}" "${NRUE_ARGS[@]}"
+timeout "${DURATION}" "${NRUE_EXEC}" "${NRUE_ARGS[@]}"
 
 status=$?
 if [ $status -eq 0 ] || [ $status -eq 124 ]; then
-    echo "Profiling finished."
-    echo "Analyze the results using:"
-    echo "sudo perf report -i ${OUTPUT_FILE}"
-    echo "For detailed annotation:"
-    echo "sudo perf annotate -i ${OUTPUT_FILE} [function_name]"
+    if [ -f "gmon.out" ]; then
+        mv gmon.out "${GPROF_OUT}"
+        gprof "${NRUE_EXEC}" "${GPROF_OUT}" > "${GPROF_REPORT}"
+        echo "Profiling finished."
+        echo "Report generated at: ${GPROF_REPORT}"
+    else
+        echo "gmon.out not found. Did you compile with -pg?"
+        status=2
+    fi
 else
-    # Check if the exit code was from the config file's executable check
     if [ $status -eq 1 ] && ! [ -x "${NRUE_EXEC}" ]; then
          echo "Profiling failed because executable was not found (checked in config)."
     else
